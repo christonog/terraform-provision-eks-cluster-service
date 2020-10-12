@@ -15,6 +15,7 @@ resource "kubernetes_service" "exercise" {
       app = each.key
     }
     port {
+      name = "tcp-${each.key}"
       protocol = "TCP"
       port        = each.value.port
       target_port = each.value.port
