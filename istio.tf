@@ -32,5 +32,5 @@ resource "null_resource" "istio" {
   provisioner "local-exec" {
     command = "istioctl manifest apply -f \"istio.yaml\""
   }
-  depends_on = [kubernetes_namespace.istio_system]
+  depends_on = [kubernetes_namespace.istio_system, null_resource.set-kube-config]
 }
