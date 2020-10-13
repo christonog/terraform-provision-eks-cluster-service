@@ -5,10 +5,26 @@ provider "kubernetes" {
   cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
 }
 
+locals {
+  namespace = "bookapp"
+}
+
+resource "kubernetes_namespace" "exercise" {
+  metadata {
+    labels = {
+     istio-injection = "enabled"
+    }
+
+    name = local.namespace
+  }
+  depends_on = ["null_resource.istio"]
+}
+
 resource "kubernetes_service" "exercise" {
   for_each = { for service in var.services : service.name => service }
   metadata {
     name = each.key
+    namespace = local.namespace
   }
   spec {
     selector = {
@@ -23,6 +39,7 @@ resource "kubernetes_service" "exercise" {
 
     type = "NodePort"
   }
+  depends_on = ["kubernetes_namespace.exercise"]
 }
 
 resource "kubernetes_deployment" "exercise" {
@@ -33,6 +50,7 @@ resource "kubernetes_deployment" "exercise" {
     labels = {
       app = each.key
     }
+    namespace = local.namespace
   }
 
   spec {
@@ -57,6 +75,7 @@ resource "kubernetes_deployment" "exercise" {
       }
     }
   }
+  depends_on = ["kubernetes_namespace.exercise"]
 }
 
 variable "services" {

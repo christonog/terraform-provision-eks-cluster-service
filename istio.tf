@@ -4,6 +4,17 @@ resource "kubernetes_namespace" "istio_system" {
   }
 }
 
+resource "null_resource" "set-kube-config" {
+  triggers = {
+    always_run = "${timestamp()}"
+  }
+
+  provisioner "local-exec" {
+    command = "aws eks --region ${var.region} update-kubeconfig --name ${local.cluster_name}"
+  }
+  depends_on = ["module.eks"]
+}
+
 resource "local_file" "istio-config" {
   content = templatefile("${path.module}/istio.tmpl", {
     enableGrafana = false
@@ -19,7 +30,7 @@ resource "null_resource" "istio" {
     always_run = timestamp()
   }
   provisioner "local-exec" {
-    command = "istioctl manifest apply -f \"istio.yaml\" --kubeconfig $(find . -type f -name \"kubeconfig_*\")"
+    command = "istioctl manifest apply -f \"istio.yaml\""
   }
-  depends_on = [kubernetes_namespace.istio_system, kubernetes_deployment.exercise]
+  depends_on = [kubernetes_namespace.istio_system]
 }
