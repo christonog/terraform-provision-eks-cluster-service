@@ -19,7 +19,7 @@ resource "null_resource" "istio" {
     always_run = timestamp()
   }
   provisioner "local-exec" {
-    command = "istioctl manifest apply -f \"istio.yaml\""
+    command = "istioctl manifest apply -f \"istio.yaml\" --kubeconfig $(find . -type f -name \"kubeconfig_*\")"
   }
-  depends_on = [kubernetes_namespace.istio_system]
+  depends_on = [kubernetes_namespace.istio_system, kubernetes_deployment.exercise]
 }

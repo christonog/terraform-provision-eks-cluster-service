@@ -51,7 +51,7 @@ resource "kubernetes_deployment" "exercise" {
       }
       spec {
         container {
-          image = "christonog/christ-services:${each.key}v1.0.0"
+          image = "christonog/${each.key}:latest"
           name  = each.key
           }
       }
