@@ -69,7 +69,7 @@ resource "kubernetes_deployment" "exercise" {
       }
       spec {
         container {
-          image = "christonog/${each.key}:latest"
+          image = "christonog/${each.key}:1.0"
           name  = each.key
           }
       }
@@ -81,7 +81,7 @@ resource "kubernetes_deployment" "exercise" {
 variable "services" {
   type = set(object( { name = string, port = number }))
   default = [
-    { name: "books", port: 3001 },
+    { name: "books", port: 3000 },
     { name: "reviews", port: 3002 }
   ]
 }

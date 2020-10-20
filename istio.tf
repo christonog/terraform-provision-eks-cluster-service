@@ -31,7 +31,7 @@ resource "null_resource" "istio" {
     always_run = timestamp()
   }
   provisioner "local-exec" {
-    command = "istioctl install --set profile=demo"
+    command = "istioctl install --set-profile=demo"
   }
   depends_on = [kubernetes_namespace.istio_system, null_resource.set-kube-config]
 }
